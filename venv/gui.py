@@ -1,17 +1,22 @@
-import functions
-import FreeSimpleGUI as sg
+from functions import write_todos, get_todos
+import PySimpleGUI as sg
 import time
+import os
+
+if not os.path.exists('../todos_app/todos'):
+    with open('../todos_app/todos', 'w') as file:
+        pass
 
 sg.theme('PythonPlus')
 
 time_label = sg.Text('', key='time')
 label = sg.Text("Type in a to-do ")
 input_box = sg.InputText(tooltip='Enter todo', key='todo')
-add_button = sg.Button("Add")
-list_box = sg.Listbox(values=functions.get_todos(), key='todos',
+add_button = sg.Button(image_source=r'C:\Users\supra\PycharmProjects\App1\todos_app\add.png', key='Add', tooltip='add todo')
+list_box = sg.Listbox(values=get_todos(), key='todos',
                       enable_events=True, size=(45, 10))
 edit_button = sg.Button('Edit')
-complete_button = sg.Button('Complete')
+complete_button = sg.Button(image_source=r'C:\Users\supra\PycharmProjects\App1\todos_app\complete.png', key='Complete', tooltip='mark complete')
 exit_button = sg.Button('Exit')
 
 window = sg.Window('My To-do App',
@@ -28,10 +33,10 @@ while True:
 # switch statement over button clicked
     match event:
         case "Add":
-            todos = functions.get_todos()
+            todos = get_todos()
             new_todo = values['todo']+'\n'
             todos.append(new_todo)
-            functions.write_todos(todos)
+            write_todos(todos)
             window['todos'].update(values=todos)
 
         case "Edit":
@@ -39,19 +44,19 @@ while True:
                 todo_to_edit = values['todos'][0]
                 new_todo = values['todo']
 
-                todos = functions.get_todos()
+                todos = get_todos()
                 index = todos.index(todo_to_edit)
                 todos[index] = new_todo
-                functions.write_todos(todos)
+                write_todos(todos)
                 window['todos'].update(values=todos)
             except IndexError:
                 sg.popup("Select a todo to edit!", font=("Helvetica", 10))
         case "Complete":
             try:
                 todo_to_complete = values['todos'][0]
-                todos = functions.get_todos()
+                todos = get_todos()
                 todos.remove(todo_to_complete)
-                functions.write_todos(todos)
+                write_todos(todos)
                 window['todos'].update(values=todos)
                 window['todo'].update(value='')
             except IndexError:
@@ -64,5 +69,5 @@ while True:
         case sg.WIN_CLOSED:
             break
 
-
+window.close()
 
